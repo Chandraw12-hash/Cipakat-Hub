@@ -6,10 +6,10 @@
 <div class="space-y-6">
 
     <!-- Header -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center flex-wrap gap-3">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Manajemen User</h1>
-            <p class="text-gray-500 mt-1">Kelola data pengguna sistem</p>
+            <p class="text-gray-500 mt-1">Kelola data pengguna sistem (warga, petugas, admin)</p>
         </div>
         <a href="{{ route('users.create') }}"
            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 shadow-sm">
@@ -21,23 +21,56 @@
     </div>
 
     <!-- Statistik Ringkas -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <p class="text-xs text-gray-400">Total User</p>
-            <p class="text-xl font-bold text-gray-800">{{ $users->total() }}</p>
+            <p class="text-xl font-bold text-gray-800">{{ $totalUsers }}</p>
         </div>
         <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <p class="text-xs text-gray-400">Admin</p>
-            <p class="text-xl font-bold text-red-600">{{ $users->where('role', 'admin')->count() }}</p>
+            <p class="text-xl font-bold text-red-600">{{ $totalAdmin }}</p>
         </div>
         <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <p class="text-xs text-gray-400">Petugas</p>
-            <p class="text-xl font-bold text-yellow-600">{{ $users->where('role', 'petugas')->count() }}</p>
+            <p class="text-xl font-bold text-yellow-600">{{ $totalPetugas }}</p>
         </div>
         <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
             <p class="text-xs text-gray-400">Warga</p>
-            <p class="text-xl font-bold text-green-600">{{ $users->where('role', 'warga')->count() }}</p>
+            <p class="text-xl font-bold text-green-600">{{ $totalWarga }}</p>
         </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+            <p class="text-xs text-gray-400">Belum Lengkap</p>
+            <p class="text-xl font-bold text-orange-600">{{ $totalBelumLengkap }}</p>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+        <form method="GET" action="{{ route('users.index') }}" class="flex flex-wrap gap-3 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Cari</label>
+                <input type="text" name="search" value="{{ request('search') }}"
+                    placeholder="Nama atau email..."
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="w-40">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Filter Role</label>
+                <select name="role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Semua Role</option>
+                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="petugas" {{ request('role') == 'petugas' ? 'selected' : '' }}>Petugas</option>
+                    <option value="warga" {{ request('role') == 'warga' ? 'selected' : '' }}>Warga</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                    Filter
+                </button>
+                <a href="{{ route('users.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition ml-2">
+                    Reset
+                </a>
+            </div>
+        </form>
     </div>
 
     <!-- Tabel User -->
@@ -49,22 +82,26 @@
 
         @if($users->count() > 0)
         <div class="overflow-x-auto">
-            <table class="w-full">
+            <table class="w-full text-sm">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
-                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">No</th>
-                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Nama</th>
-                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Email</th>
-                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Role</th>
-                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Aksi</th>
+                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">No</th>
+                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Foto</th>
+                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Nama / Role</th>
+                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Kontak</th>
+                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">NIK</th>
+                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Alamat</th>
+                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @foreach($users as $index => $user)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ $index + $users->firstItem() }}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
+                        <td class="px-4 py-3 text-gray-600">{{ $index + $users->firstItem() }}</td>
+                        <td class="px-4 py-3">
+                            @if($user->photo)
+                                <img src="{{ Storage::url($user->photo) }}" class="w-8 h-8 rounded-full object-cover">
+                            @else
                                 <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm
                                     @if($user->role == 'admin') bg-red-500
                                     @elseif($user->role == 'petugas') bg-yellow-500
@@ -72,12 +109,14 @@
                                     @endif">
                                     {{ substr($user->name, 0, 1) }}
                                 </div>
-                                <span class="font-medium text-gray-800">{{ $user->name }}</span>
-                            </div>
+                            @endif
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ $user->email }}</td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                        <td class="px-4 py-3">
+                            <div>
+                                <div class="font-medium text-gray-800">{{ $user->name }}</div>
+                                <div class="text-xs text-gray-400">{{ $user->email }}</div>
+                            </div>
+                            <span class="inline-flex mt-1 px-2 py-0.5 text-xs font-semibold rounded-full
                                 @if($user->role == 'admin') bg-red-100 text-red-700
                                 @elseif($user->role == 'petugas') bg-yellow-100 text-yellow-700
                                 @else bg-green-100 text-green-700
@@ -85,7 +124,36 @@
                                 {{ ucfirst($user->role) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-3">
+                            <div class="text-gray-600">
+                                @if($user->phone)
+                                    <div class="flex items-center gap-1 text-xs">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                        </svg>
+                                        {{ $user->phone }}
+                                    </div>
+                                @else
+                                    <span class="text-gray-400 text-xs">-</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-gray-600 text-xs">
+                            {{ $user->nik ?? '-' }}
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="text-gray-600 text-xs">
+                                @if($user->alamat)
+                                    <div>{{ Str::limit($user->alamat, 30) }}</div>
+                                    @if($user->rt_rw)
+                                        <div class="text-gray-400">RT/RW: {{ $user->rt_rw }}</div>
+                                    @endif
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
                             <div class="flex gap-2">
                                 <a href="{{ route('users.edit', $user->id) }}"
                                    class="text-blue-600 hover:text-blue-800 transition p-1" title="Edit">
@@ -113,7 +181,7 @@
         </div>
 
         <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-            {{ $users->links() }}
+            {{ $users->appends(request()->query())->links() }}
         </div>
         @else
         <div class="p-12 text-center">

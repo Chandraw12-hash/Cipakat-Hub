@@ -48,12 +48,12 @@
             <h1 class="font-bold text-2xl text-gray-800">{{ Setting::get('desa_nama', 'Cipakat') }} <span class="text-blue-600">Hub</span></h1>
         </div>
         <div class="hidden md:flex space-x-8">
-            <a href="#beranda" class="text-gray-600 hover:text-blue-600 transition font-medium">Beranda</a>
-            <a href="#layanan" class="text-gray-600 hover:text-blue-600 transition font-medium">Layanan</a>
-            <a href="#usaha" class="text-gray-600 hover:text-blue-600 transition font-medium">Unit Usaha</a>
-            <a href="#produk" class="text-gray-600 hover:text-blue-600 transition font-medium">Produk UMKM</a>
-            <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition font-medium">Tentang</a>
-            <a href="#kontak" class="text-gray-600 hover:text-blue-600 transition font-medium">Kontak</a>
+            <a href="#beranda" class="text-gray-600 hover:text-lime-600 transition font-medium">Beranda</a>
+            <a href="#layanan" class="text-gray-600 hover:text-lime-600 transition font-medium">Layanan</a>
+            <a href="#usaha" class="text-gray-600 hover:text-lime-600 transition font-medium">Unit Usaha</a>
+            <a href="#produk" class="text-gray-600 hover:text-lime-600 transition font-medium">Produk UMKM</a>
+            <a href="#tentang" class="text-gray-600 hover:text-lime-600 transition font-medium">Tentang</a>
+            <a href="#kontak" class="text-gray-600 hover:text-lime-600 transition font-medium">Kontak</a>
         </div>
         <div class="flex gap-3">
             <a href="{{ route('login') }}" class="border border-blue-600 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition font-medium">Masuk</a>
