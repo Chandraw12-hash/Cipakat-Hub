@@ -21,10 +21,10 @@
             background: #f1f5f9;
         }
 
-        /* SIDEBAR */
+        /* SIDEBAR - WARNA HIJAU MEDIUM SEA GREEN #3CB371 */
         .sidebar {
             width: 280px;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(180deg, #2d6a4f 0%, #3CB371 100%);
             position: fixed;
             left: 0;
             top: 0;
@@ -62,9 +62,9 @@
         }
 
         .toggle-btn button {
-            background: #334155;
+            background: #2d6a4f;
             border: none;
-            color: #94a3b8;
+            color: #d1fae5;
             width: 32px;
             height: 32px;
             border-radius: 8px;
@@ -77,7 +77,7 @@
         }
 
         .toggle-btn button:hover {
-            background: #2563eb;
+            background: #1b4d3e;
             color: white;
         }
 
@@ -94,7 +94,7 @@
         /* USER SECTION */
         .user-section {
             padding: 20px 16px;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid #2d6a4f;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -105,7 +105,7 @@
         .avatar {
             width: 44px;
             height: 44px;
-            background: #2563eb;
+            background: #1b4d3e;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -114,6 +114,13 @@
             font-weight: bold;
             font-size: 16px;
             flex-shrink: 0;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .user-info {
@@ -134,15 +141,15 @@
         }
 
         .user-email {
-            color: #94a3b8;
+            color: #d1fae5;
             font-size: 11px;
             margin-top: 2px;
         }
 
         .user-role {
             display: inline-block;
-            background: #334155;
-            color: #94a3b8;
+            background: #2d6a4f;
+            color: #d1fae5;
             font-size: 10px;
             padding: 2px 8px;
             border-radius: 20px;
@@ -157,7 +164,7 @@
             padding: 11px 16px;
             margin: 3px 10px;
             border-radius: 10px;
-            color: #cbd5e1;
+            color: #d1fae5;
             font-size: 14px;
             font-weight: 500;
             text-decoration: none;
@@ -168,12 +175,12 @@
         }
 
         .nav-item:hover {
-            background: rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
+            background: rgba(27, 77, 62, 0.5);
+            color: white;
         }
 
         .nav-item.active {
-            background: #2563eb;
+            background: #1b4d3e;
             color: white;
         }
 
@@ -198,14 +205,14 @@
             content: attr(data-label);
             position: fixed;
             left: 80px;
-            background: #1e293b;
+            background: #2d6a4f;
             color: white;
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 13px;
             white-space: nowrap;
             z-index: 100;
-            border: 1px solid #334155;
+            border: 1px solid #3CB371;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
@@ -218,7 +225,7 @@
             margin: 4px 10px;
             padding: 11px 16px;
             border-radius: 10px;
-            color: #f87171;
+            color: #fecaca;
             background: none;
             border: none;
             cursor: pointer;
@@ -230,8 +237,8 @@
         }
 
         .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fecaca;
+            background: rgba(254, 202, 202, 0.15);
+            color: white;
         }
 
         .logout-btn svg {
@@ -256,7 +263,7 @@
             top: 16px;
             left: 16px;
             z-index: 60;
-            background: #2563eb;
+            background: #3CB371;
             border: none;
             color: white;
             padding: 10px;
@@ -350,11 +357,11 @@
         }
 
         .sidebar::-webkit-scrollbar-track {
-            background: #1e293b;
+            background: #2d6a4f;
         }
 
         .sidebar::-webkit-scrollbar-thumb {
-            background: #475569;
+            background: #1b4d3e;
             border-radius: 4px;
         }
     </style>
@@ -383,10 +390,14 @@
             </button>
         </div>
 
-        <!-- User Info -->
+        <!-- User Info dengan FOTO PROFIL -->
         <div class="user-section">
             <div class="avatar">
-                {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                @if(Auth::user()->photo)
+                    <img src="{{ Storage::url(Auth::user()->photo) }}" alt="Foto Profil">
+                @else
+                    {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                @endif
             </div>
             <div class="user-info">
                 <div class="user-name">{{ Auth::user()->name ?? 'Admin' }}</div>
@@ -414,7 +425,6 @@
                 </svg>
                 <span class="nav-label">Profil Saya</span>
             </a>
-
 
             <!-- Pengumuman (Hanya untuk Admin & Petugas yang perlu manajemen) -->
             @auth
@@ -471,7 +481,6 @@
 
             @auth
                 @if (Auth::user()->role == 'admin' || Auth::user()->role == 'petugas')
-                    <!-- Manajemen Booking untuk Admin & Petugas -->
                     <a href="{{ route('booking.admin') }}" class="nav-item" data-label="Manajemen Booking">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -480,7 +489,6 @@
                         <span class="nav-label">Manajemen Booking</span>
                     </a>
                 @else
-                    <!-- Booking Saya untuk Warga -->
                     <a href="{{ route('booking.index') }}" class="nav-item" data-label="Booking Saya">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -520,12 +528,7 @@
                         </svg>
                         <span class="nav-label">Manajemen User</span>
                     </a>
-                @endif
-            @endauth
 
-            @auth
-                @if (Auth::user()->role == 'admin')
-                    <!-- ... menu lain ... -->
                     <a href="{{ route('settings') }}" class="nav-item" data-label="Pengaturan">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -555,25 +558,25 @@
     </aside>
 
     <!-- MAIN CONTENT dengan Loading Skeleton -->
-    <main class="main-content" id="mainContent">
-        <div style="background: white; border-bottom: 1px solid #e2e8f0; padding: 16px 24px;">
-            <h2 style="font-size: 18px; font-weight: 600; color: #0f172a;">@yield('title', 'Dashboard')</h2>
-        </div>
+   <main class="main-content" id="mainContent">
+    <div style="background: linear-gradient(135deg, #2d6a4f 0%, #3CB371 100%); padding: 16px 24px; border-bottom: 1px solid #1b4d3e;">
+        <h2 style="font-size: 18px; font-weight: 600; color: white;">@yield('title', 'Dashboard')</h2>
+    </div>
 
-        <!-- Loading Skeleton -->
-        <div id="skeletonLoader" style="padding: 24px;">
-            <div class="skeleton" style="height: 120px; margin-bottom: 20px;"></div>
-            <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
-            <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
-            <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
-            <div class="skeleton" style="height: 60px;"></div>
-        </div>
+    <!-- Loading Skeleton -->
+    <div id="skeletonLoader" style="padding: 24px;">
+        <div class="skeleton" style="height: 120px; margin-bottom: 20px;"></div>
+        <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
+        <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
+        <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
+        <div class="skeleton" style="height: 60px;"></div>
+    </div>
 
-        <!-- Konten Utama (awal disembunyikan) -->
-        <div id="mainContentWrapper" style="padding: 24px; display: none;">
-            @yield('content')
-        </div>
-    </main>
+    <!-- Konten Utama (awal disembunyikan) -->
+    <div id="mainContentWrapper" style="padding: 24px; display: none;">
+        @yield('content')
+    </div>
+</main>
 
     <script>
         const sidebar = document.getElementById('sidebar');
@@ -629,7 +632,7 @@
                     mainContentWrapper.style.display = 'block';
                     mainContentWrapper.classList.add('fade-in');
                 }
-            }, 500); // 500ms delay untuk efek loading
+            }, 500);
         });
     </script>
 
