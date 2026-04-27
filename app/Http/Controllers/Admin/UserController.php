@@ -20,9 +20,9 @@ class UserController extends Controller
         // Search
         if ($request->search) {
             $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%')
-                  ->orWhere('nik', 'like', '%' . $request->search . '%')
-                  ->orWhere('phone', 'like', '%' . $request->search . '%');
+                ->orWhere('email', 'like', '%' . $request->search . '%')
+                ->orWhere('nik', 'like', '%' . $request->search . '%')
+                ->orWhere('phone', 'like', '%' . $request->search . '%');
         }
 
         // Filter role
@@ -70,11 +70,24 @@ class UserController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'jenis_kelamin' => 'nullable|in:Laki-laki,Perempuan',
             'pekerjaan' => 'nullable|string|max:100',
+            'status_pekerjaan' => 'nullable|in:bekerja,tidak_bekerja,mahasiswa,pensiun',
+            'pendidikan_terakhir' => 'nullable|string|max:50',
+
+            // Sosial Ekonomi
+            'pendapatan_bulanan' => 'nullable|numeric',
+            'kategori_sosial' => 'nullable|in:rentan,mampu',
+            'status_rumah' => 'nullable|in:milik_sendiri,kontrak,keluarga',
+            'is_penerima_bantuan' => 'nullable|boolean',
+            'jumlah_tanggungan' => 'nullable|integer',
 
             // Alamat
             'alamat' => 'nullable|string',
             'rt_rw' => 'nullable|string|max:20',
             'kode_pos' => 'nullable|string|max:10',
+
+            // Keluarga
+            'kepala_keluarga_nik' => 'nullable|string|max:20',
+            'status_keluarga' => 'nullable|in:kepala_keluarga,istri,anak,lainnya',
 
             // Foto Profil
             'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -95,11 +108,24 @@ class UserController extends Controller
             'tanggal_lahir' => $request->tanggal_lahir,
             'jenis_kelamin' => $request->jenis_kelamin,
             'pekerjaan' => $request->pekerjaan,
+            'status_pekerjaan' => $request->status_pekerjaan,
+            'pendidikan_terakhir' => $request->pendidikan_terakhir,
+
+            // Sosial Ekonomi
+            'pendapatan_bulanan' => $request->pendapatan_bulanan,
+            'kategori_sosial' => $request->kategori_sosial,
+            'status_rumah' => $request->status_rumah,
+            'is_penerima_bantuan' => $request->is_penerima_bantuan ?? 0,
+            'jumlah_tanggungan' => $request->jumlah_tanggungan ?? 0,
 
             // Alamat
             'alamat' => $request->alamat,
             'rt_rw' => $request->rt_rw,
             'kode_pos' => $request->kode_pos,
+
+            // Keluarga
+            'kepala_keluarga_nik' => $request->kepala_keluarga_nik,
+            'status_keluarga' => $request->status_keluarga ?? 'lainnya',
         ];
 
         // Upload foto
@@ -124,6 +150,15 @@ class UserController extends Controller
     }
 
     /**
+     * Display the specified user.
+     */
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.users.show', compact('user'));
+    }
+
+    /**
      * Update the specified user in storage.
      */
     public function update(Request $request, $id)
@@ -143,11 +178,24 @@ class UserController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'jenis_kelamin' => 'nullable|in:Laki-laki,Perempuan',
             'pekerjaan' => 'nullable|string|max:100',
+            'status_pekerjaan' => 'nullable|in:bekerja,tidak_bekerja,mahasiswa,pensiun',
+            'pendidikan_terakhir' => 'nullable|string|max:50',
+
+            // Sosial Ekonomi
+            'pendapatan_bulanan' => 'nullable|numeric',
+            'kategori_sosial' => 'nullable|in:rentan,mampu',
+            'status_rumah' => 'nullable|in:milik_sendiri,kontrak,keluarga',
+            'is_penerima_bantuan' => 'nullable|boolean',
+            'jumlah_tanggungan' => 'nullable|integer',
 
             // Alamat
             'alamat' => 'nullable|string',
             'rt_rw' => 'nullable|string|max:20',
             'kode_pos' => 'nullable|string|max:10',
+
+            // Keluarga
+            'kepala_keluarga_nik' => 'nullable|string|max:20',
+            'status_keluarga' => 'nullable|in:kepala_keluarga,istri,anak,lainnya',
 
             // Foto Profil
             'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -166,11 +214,24 @@ class UserController extends Controller
             'tanggal_lahir' => $request->tanggal_lahir,
             'jenis_kelamin' => $request->jenis_kelamin,
             'pekerjaan' => $request->pekerjaan,
+            'status_pekerjaan' => $request->status_pekerjaan,
+            'pendidikan_terakhir' => $request->pendidikan_terakhir,
+
+            // Sosial Ekonomi
+            'pendapatan_bulanan' => $request->pendapatan_bulanan,
+            'kategori_sosial' => $request->kategori_sosial,
+            'status_rumah' => $request->status_rumah,
+            'is_penerima_bantuan' => $request->is_penerima_bantuan ?? 0,
+            'jumlah_tanggungan' => $request->jumlah_tanggungan ?? 0,
 
             // Alamat
             'alamat' => $request->alamat,
             'rt_rw' => $request->rt_rw,
             'kode_pos' => $request->kode_pos,
+
+            // Keluarga
+            'kepala_keluarga_nik' => $request->kepala_keluarga_nik,
+            'status_keluarga' => $request->status_keluarga ?? 'lainnya',
         ];
 
         // Upload foto baru

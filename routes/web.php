@@ -11,6 +11,8 @@ use App\Http\Controllers\ProdukUmkmController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProdukOrderController;
 use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\AnalisisWargaController;
+use App\Http\Controllers\ImportWargaController;
 use App\Models\Pengumuman;
 
 /*
@@ -101,51 +103,50 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/booking/{id}/complete', [BookingController::class, 'complete'])->name('booking.complete');
     });
 
-    // ========== KEUANGAN ==========
-    Route::middleware(['role:admin,petugas'])->group(function () {
-        Route::resource('keuangan', KeuanganController::class);
-    });
+    // ========== KEUANGAN (SUDAH DIHAPUS - TIDAK PAKAI) ==========
+    // Keuangan tidak digunakan lagi (fokus ke layanan desa)
 
     // ========== KHUSUS ADMIN ==========
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class);
 
+        // ========== ANALISIS WARGA & IMPORT DATA ==========
+        Route::get('/analisis-warga', [AnalisisWargaController::class, 'index'])->name('analisis.warga');
+        Route::get('/analisis-warga/export', [AnalisisWargaController::class, 'export'])->name('analisis.warga.export');
+
+        // Import Data Warga dari Excel
+        Route::get('/import-warga', [ImportWargaController::class, 'index'])->name('import.warga');
+        Route::post('/import-warga', [ImportWargaController::class, 'import'])->name('import.warga.store');
+        Route::get('/import-warga/template', [ImportWargaController::class, 'downloadTemplate'])->name('import.warga.template');
+
+        // Laporan
         Route::prefix('laporan')->group(function () {
             Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
-            Route::get('/keuangan', [LaporanController::class, 'keuangan'])->name('laporan.keuangan');
             Route::get('/surat', [LaporanController::class, 'surat'])->name('laporan.surat');
             Route::get('/booking', [LaporanController::class, 'booking'])->name('laporan.booking');
-            Route::get('/export/keuangan', [LaporanController::class, 'exportKeuanganPdf'])->name('laporan.export.keuangan');
             Route::get('/export/surat', [LaporanController::class, 'exportSuratPdf'])->name('laporan.export.surat');
             Route::get('/export/booking', [LaporanController::class, 'exportBookingPdf'])->name('laporan.export.booking');
         });
 
-        Route::get('/settings', function () {
-            return view('admin.settings');
-        })->name('settings');
+        // Setting Web
+        Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings');
+        Route::put('/settings', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+    });
+
+    // ========== PENGUMUMAN DESA (ADMIN & PETUGAS) ==========
+    Route::middleware(['role:admin,petugas'])->group(function () {
+        Route::get('/admin/pengumuman', [PengumumanController::class, 'adminIndex'])->name('pengumuman.admin');
+        Route::get('/admin/pengumuman/create', [PengumumanController::class, 'create'])->name('pengumuman.create');
+        Route::post('/admin/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
+        Route::get('/admin/pengumuman/{id}/edit', [PengumumanController::class, 'edit'])->name('pengumuman.edit');
+        Route::put('/admin/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
+        Route::delete('/admin/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
     });
 });
 
 // ========== PENGUMUMAN DESA (PUBLIK) ==========
 Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman.index');
 Route::get('/pengumuman/{id}', [PengumumanController::class, 'show'])->name('pengumuman.show');
-
-// ========== PENGUMUMAN DESA (ADMIN & PETUGAS) ==========
-Route::middleware(['role:admin,petugas'])->group(function () {
-    Route::get('/admin/pengumuman', [PengumumanController::class, 'adminIndex'])->name('pengumuman.admin');
-    Route::get('/admin/pengumuman/create', [PengumumanController::class, 'create'])->name('pengumuman.create');
-    Route::post('/admin/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
-    Route::get('/admin/pengumuman/{id}/edit', [PengumumanController::class, 'edit'])->name('pengumuman.edit');
-    Route::put('/admin/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
-    Route::delete('/admin/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.destroy');
-});
-
-
-// Setting Web (khusus admin)
-Route::middleware(['role:admin'])->group(function () {
-    Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings');
-    Route::put('/settings', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
-});
 
 // ROUTE TEST
 Route::middleware(['auth'])->group(function () {

@@ -30,27 +30,21 @@ class DashboardController extends Controller
             ->orderByRaw("FIELD(role, 'admin', 'petugas')")
             ->get()
             ->map(function($user) {
-                // Tentukan warna berdasarkan role
                 $warna = match($user->role) {
                     'admin' => 'blue',
                     'petugas' => 'green',
                     default => 'gray'
                 };
-
-                // Tentukan singkatan
                 $singkatan = match($user->role) {
                     'admin' => 'ADM',
                     'petugas' => 'PTG',
                     default => 'STF'
                 };
-
-                // Tentukan jabatan
                 $jabatan = match($user->role) {
                     'admin' => 'Administrator BUMDes',
                     'petugas' => 'Petugas BUMDes',
                     default => 'Staff BUMDes'
                 };
-
                 return (object) [
                     'id' => $user->id,
                     'nama' => $user->name,
@@ -66,38 +60,32 @@ class DashboardController extends Controller
                 ];
             });
 
-        // ==================== DATA KEUANGAN ====================
-        $totalPemasukan = Keuangan::where('jenis', 'pemasukan')->sum('jumlah');
-        $totalPengeluaran = Keuangan::where('jenis', 'pengeluaran')->sum('jumlah');
+        // ==================== DATA KEUANGAN (NILAI DEFAULT) ====================
+        $totalPemasukan = Keuangan::where('jenis', 'pemasukan')->sum('jumlah') ?? 0;
+        $totalPengeluaran = Keuangan::where('jenis', 'pengeluaran')->sum('jumlah') ?? 0;
         $saldoKas = $totalPemasukan - $totalPengeluaran;
 
-        // Total Aset (Aktiva) = semua pemasukan + saldo kas
         $totalAset = $totalPemasukan;
-
-        // Total Pasiva = semua pengeluaran + kewajiban
         $totalPasiva = $totalPengeluaran;
 
-        // Total Modal = modal awal + laba ditahan
         $modalAwal = Setting::get('modal_awal', 0);
-        $labaDitahan = Keuangan::where('jenis', 'pemasukan')->where('kategori', 'laba')->sum('jumlah');
+        $labaDitahan = Keuangan::where('jenis', 'pemasukan')->where('kategori', 'laba')->sum('jumlah') ?? 0;
         $totalModal = $modalAwal + $labaDitahan;
 
-        // Laba/Rugi tahun ini
         $labaRugiTahunIni = Keuangan::whereYear('tanggal', date('Y'))
-            ->selectRaw('SUM(CASE WHEN jenis = "pemasukan" THEN jumlah ELSE -jumlah END) as laba')
+            ->selectRaw('COALESCE(SUM(CASE WHEN jenis = "pemasukan" THEN jumlah ELSE -jumlah END), 0) as laba')
             ->first()->laba ?? 0;
 
-        // Growth (perubahan dari bulan lalu)
         $bulanLalu = Keuangan::whereMonth('tanggal', date('m', strtotime('-1 month')))
             ->whereYear('tanggal', date('Y', strtotime('-1 month')))
-            ->selectRaw('SUM(CASE WHEN jenis = "pemasukan" THEN jumlah ELSE -jumlah END) as laba')
+            ->selectRaw('COALESCE(SUM(CASE WHEN jenis = "pemasukan" THEN jumlah ELSE -jumlah END), 0) as laba')
             ->first()->laba ?? 0;
 
         $labaRugiGrowth = $labaRugiTahunIni - $bulanLalu;
-        $asetGrowth = Keuangan::whereMonth('tanggal', date('m'))->sum('jumlah') -
-                      Keuangan::whereMonth('tanggal', date('m', strtotime('-1 month')))->sum('jumlah');
+        $asetGrowth = (Keuangan::whereMonth('tanggal', date('m'))->sum('jumlah') ?? 0) -
+                      (Keuangan::whereMonth('tanggal', date('m', strtotime('-1 month')))->sum('jumlah') ?? 0);
 
-        // ==================== DATA STATISTIK ====================
+        // ==================== DATA STATISTIK LAYANAN ====================
         $totalWarga = User::where('role', 'warga')->count();
         $totalAdmin = User::where('role', 'admin')->count();
         $totalPetugas = User::where('role', 'petugas')->count();
@@ -120,7 +108,7 @@ class DashboardController extends Controller
         $pemasukanBulanIni = Keuangan::where('jenis', 'pemasukan')
             ->whereMonth('tanggal', date('m'))
             ->whereYear('tanggal', date('Y'))
-            ->sum('jumlah');
+            ->sum('jumlah') ?? 0;
 
         $wargaBaru = User::where('role', 'warga')
             ->whereMonth('created_at', date('m'))
@@ -131,49 +119,50 @@ class DashboardController extends Controller
         $suratSaya = LayananSurat::where('user_id', Auth::id())->count();
         $bookingSaya = Booking::where('user_id', Auth::id())->count();
 
-        // ==================== DATA UNTUK GRAFIK ====================
+        // ==================== DATA GRAFIK LAYANAN (SURAT & BOOKING) ====================
         $chartLabels = [];
-        $chartPemasukan = [];
-        $chartPengeluaran = [];
-        $chartPendapatan = [];
-        $chartBiaya = [];
-        $chartLaba = [];
+        $chartSurat = [];
+        $chartBooking = [];
 
         for ($i = 5; $i >= 0; $i--) {
             $bulan = now()->subMonths($i);
             $chartLabels[] = $bulan->translatedFormat('M Y');
 
-            // Untuk grafik keuangan (pemasukan & pengeluaran)
+            // Data pengajuan surat per bulan
+            $surat = LayananSurat::whereMonth('created_at', $bulan->month)
+                ->whereYear('created_at', $bulan->year)
+                ->count();
+            $chartSurat[] = $surat;
+
+            // Data booking per bulan
+            $booking = Booking::whereMonth('created_at', $bulan->month)
+                ->whereYear('created_at', $bulan->year)
+                ->count();
+            $chartBooking[] = $booking;
+        }
+
+        // Data grafik keuangan (untuk petugas)
+        $chartPemasukan = [];
+        $chartPengeluaran = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $bulan = now()->subMonths($i);
             $pemasukan = Keuangan::where('jenis', 'pemasukan')
                 ->whereMonth('tanggal', $bulan->month)
                 ->whereYear('tanggal', $bulan->year)
-                ->sum('jumlah');
+                ->sum('jumlah') ?? 0;
             $chartPemasukan[] = $pemasukan;
 
             $pengeluaran = Keuangan::where('jenis', 'pengeluaran')
                 ->whereMonth('tanggal', $bulan->month)
                 ->whereYear('tanggal', $bulan->year)
-                ->sum('jumlah');
+                ->sum('jumlah') ?? 0;
             $chartPengeluaran[] = $pengeluaran;
-
-            // Untuk grafik kinerja (pendapatan, biaya, laba)
-            $pendapatan = Keuangan::where('jenis', 'pemasukan')
-                ->whereIn('kategori', ['pendapatan', 'jasa', 'sewa'])
-                ->whereMonth('tanggal', $bulan->month)
-                ->whereYear('tanggal', $bulan->year)
-                ->sum('jumlah');
-            $chartPendapatan[] = $pendapatan;
-
-            $biaya = Keuangan::where('jenis', 'pengeluaran')
-                ->whereIn('kategori', ['operasional', 'gaji', 'perawatan'])
-                ->whereMonth('tanggal', $bulan->month)
-                ->whereYear('tanggal', $bulan->year)
-                ->sum('jumlah');
-            $chartBiaya[] = $biaya;
-
-            $laba = $pendapatan - $biaya;
-            $chartLaba[] = $laba;
         }
+
+        // ==================== DATA KK (KEPALA KELUARGA) ====================
+        $totalKK = User::where('role', 'warga')
+            ->where('status_keluarga', 'kepala_keluarga')
+            ->count();
 
         // ==================== PENGUMUMAN TERBARU ====================
         $pengumuman = Pengumuman::where('status', 'published')
@@ -231,18 +220,13 @@ class DashboardController extends Controller
 
         // ==================== VIEW ====================
         return view('dashboard.index', compact(
-            // Data BUMDes
             'namaDesa',
             'alamatDesa',
             'ahl',
             'kepalaDesa',
             'direktur',
             'sekretaris',
-
-            // Data Pengurus dari database users
             'pengurusList',
-
-            // Data Keuangan (untuk kartu utama)
             'totalAset',
             'totalPasiva',
             'totalModal',
@@ -250,8 +234,6 @@ class DashboardController extends Controller
             'asetGrowth',
             'labaRugiGrowth',
             'saldoKas',
-
-            // Data Statistik
             'totalWarga',
             'totalAdmin',
             'totalPetugas',
@@ -269,20 +251,14 @@ class DashboardController extends Controller
             'bookingSelesai',
             'pemasukanBulanIni',
             'wargaBaru',
-
-            // Data untuk warga
             'suratSaya',
             'bookingSaya',
-
-            // Data Grafik
             'chartLabels',
+            'chartSurat',
+            'chartBooking',
             'chartPemasukan',
             'chartPengeluaran',
-            'chartPendapatan',
-            'chartBiaya',
-            'chartLaba',
-
-            // Data Lainnya
+            'totalKK',
             'pengumuman',
             'aktivitasTerbaru'
         ));

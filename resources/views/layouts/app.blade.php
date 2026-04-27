@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Cipakat Hub - BUMDes</title>
+    <title>Cipakat Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -19,12 +19,13 @@
         body {
             font-family: 'Inter', sans-serif;
             background: #f1f5f9;
+            overflow: hidden;
         }
 
-        /* SIDEBAR - WARNA HIJAU MEDIUM SEA GREEN #3CB371 */
+        /* ===================== SIDEBAR ===================== */
         .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #2d6a4f 0%, #3CB371 100%);
+            width: 270px;
+            background: linear-gradient(160deg, #1a4731 0%, #2d6a4f 40%, #3CB371 100%);
             position: fixed;
             left: 0;
             top: 0;
@@ -32,42 +33,100 @@
             overflow-y: auto;
             overflow-x: hidden;
             z-index: 50;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 6px 0 30px rgba(0, 0, 0, 0.18);
             display: flex;
             flex-direction: column;
-            transition: width 0.3s ease;
+            transition: width 0.3s cubic-bezier(.4, 0, .2, 1);
         }
 
         .sidebar.collapsed {
-            width: 72px;
+            width: 68px;
         }
 
-        /* MAIN CONTENT */
+        /* ===================== MAIN CONTENT ===================== */
         .main-content {
-            margin-left: 280px;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease;
+            margin-left: 270px;
+            height: 100vh;
+            overflow-y: auto;
+            transition: margin-left 0.3s cubic-bezier(.4, 0, .2, 1);
         }
 
         .main-content.collapsed {
-            margin-left: 72px;
+            margin-left: 68px;
         }
 
-        /* TOGGLE BUTTON */
-        .toggle-btn {
+        /* ===================== SIDEBAR HEADER ===================== */
+        .sidebar-header {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            padding: 12px 16px 0;
+            justify-content: space-between;
+            padding: 20px 16px 16px;
+            gap: 8px;
         }
 
-        .toggle-btn button {
-            background: #2d6a4f;
-            border: none;
-            color: #d1fae5;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+        .sidebar-brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .brand-icon-box {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+
+        .brand-icon-box svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .brand-texts {
+            overflow: hidden;
+            white-space: nowrap;
+            transition: opacity 0.25s ease, max-width 0.3s ease;
+            max-width: 200px;
+        }
+
+        .sidebar.collapsed .brand-texts {
+            opacity: 0;
+            max-width: 0;
+        }
+
+        .brand-title {
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.2;
+            letter-spacing: 0.1px;
+        }
+
+        .brand-subtitle {
+            color: rgba(255, 255, 255, 0.48);
+            font-size: 10px;
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .collapse-btn {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: rgba(255, 255, 255, 0.80);
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -76,50 +135,74 @@
             flex-shrink: 0;
         }
 
-        .toggle-btn button:hover {
-            background: #1b4d3e;
+        .collapse-btn:hover {
+            background: rgba(255, 255, 255, 0.20);
             color: white;
         }
 
-        .toggle-btn button svg {
-            width: 16px;
-            height: 16px;
+        .collapse-btn svg {
+            width: 14px;
+            height: 14px;
             transition: transform 0.3s ease;
         }
 
-        .sidebar.collapsed .toggle-btn button svg {
+        .sidebar.collapsed .collapse-btn svg {
             transform: rotate(180deg);
         }
 
-        /* USER SECTION */
+        /* hide old toggle-btn */
+        .toggle-btn {
+            display: none;
+        }
+
+        .sidebar-brand {
+            display: none;
+        }
+
+        /* ===================== DIVIDER ===================== */
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.10);
+            margin: 0 16px 12px;
+        }
+
+        /* ===================== USER SECTION ===================== */
         .user-section {
-            padding: 20px 16px;
-            border-bottom: 1px solid #2d6a4f;
-            margin-bottom: 8px;
+            padding: 10px 12px;
+            margin: 4px 8px 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .user-section:hover {
+            background: rgba(255, 255, 255, 0.13);
         }
 
         .avatar {
-            width: 44px;
-            height: 44px;
-            background: #1b4d3e;
-            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #1b4d3e, #2d6a4f);
+            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: bold;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 15px;
             flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.25);
         }
 
         .avatar img {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
+            border-radius: 9px;
             object-fit: cover;
         }
 
@@ -127,6 +210,8 @@
             overflow: hidden;
             transition: opacity 0.2s ease, width 0.3s ease;
             white-space: nowrap;
+            flex: 1;
+            min-width: 0;
         }
 
         .sidebar.collapsed .user-info {
@@ -137,35 +222,61 @@
         .user-name {
             color: white;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .user-email {
-            color: #d1fae5;
-            font-size: 11px;
-            margin-top: 2px;
+            color: rgba(255, 255, 255, 0.50);
+            font-size: 10px;
+            margin-top: 1px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .user-role {
             display: inline-block;
-            background: #2d6a4f;
+            background: rgba(255, 255, 255, 0.12);
             color: #d1fae5;
-            font-size: 10px;
-            padding: 2px 8px;
+            font-size: 9px;
+            padding: 2px 7px;
             border-radius: 20px;
-            margin-top: 4px;
+            margin-top: 3px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        /* NAV ITEMS */
+        /* ===================== NAV SECTION LABEL ===================== */
+        .nav-section-label {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 10px 20px 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.collapsed .nav-section-label {
+            opacity: 0;
+        }
+
+        /* ===================== NAV ITEMS ===================== */
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 11px 16px;
-            margin: 3px 10px;
-            border-radius: 10px;
-            color: #d1fae5;
-            font-size: 14px;
+            gap: 11px;
+            padding: 10px 14px;
+            margin: 2px 8px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.70);
+            font-size: 13.5px;
             font-weight: 500;
             text-decoration: none;
             transition: all 0.2s ease;
@@ -175,19 +286,39 @@
         }
 
         .nav-item:hover {
-            background: rgba(27, 77, 62, 0.5);
+            background: rgba(255, 255, 255, 0.12);
             color: white;
+            transform: translateX(2px);
         }
 
         .nav-item.active {
-            background: #1b4d3e;
+            background: rgba(255, 255, 255, 0.18);
             color: white;
+            font-weight: 600;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 25%;
+            height: 50%;
+            width: 3px;
+            background: white;
+            border-radius: 0 3px 3px 0;
         }
 
         .nav-item svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             flex-shrink: 0;
+            opacity: 0.85;
+        }
+
+        .nav-item.active svg,
+        .nav-item:hover svg {
+            opacity: 1;
         }
 
         .nav-label {
@@ -204,46 +335,54 @@
         .sidebar.collapsed .nav-item:hover::after {
             content: attr(data-label);
             position: fixed;
-            left: 80px;
-            background: #2d6a4f;
+            left: 76px;
+            background: #1a4731;
             color: white;
             padding: 6px 12px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
             white-space: nowrap;
             z-index: 100;
-            border: 1px solid #3CB371;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            font-weight: 500;
         }
 
-        /* LOGOUT */
+        /* ===================== LOGOUT ===================== */
+        .logout-section {
+            padding: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 4px;
+        }
+
         .logout-btn {
             display: flex;
             align-items: center;
-            gap: 12px;
-            width: calc(100% - 20px);
-            margin: 4px 10px;
-            padding: 11px 16px;
-            border-radius: 10px;
-            color: #fecaca;
+            gap: 11px;
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            color: rgba(254, 202, 202, 0.80);
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 500;
             transition: all 0.2s ease;
             white-space: nowrap;
             overflow: hidden;
+            font-family: 'Inter', sans-serif;
         }
 
         .logout-btn:hover {
-            background: rgba(254, 202, 202, 0.15);
-            color: white;
+            background: rgba(254, 202, 202, 0.12);
+            color: #fecaca;
+            transform: translateX(2px);
         }
 
         .logout-btn svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             flex-shrink: 0;
         }
 
@@ -256,19 +395,20 @@
             width: 0;
         }
 
-        /* HAMBURGER - Mobile only */
+        /* ===================== HAMBURGER MOBILE ===================== */
         .hamburger {
             display: none;
             position: fixed;
-            top: 16px;
-            left: 16px;
+            top: 14px;
+            left: 14px;
             z-index: 60;
-            background: #3CB371;
+            background: #2d6a4f;
             border: none;
             color: white;
-            padding: 10px;
+            padding: 9px;
             border-radius: 10px;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .overlay {
@@ -277,14 +417,15 @@
             inset: 0;
             background: rgba(0, 0, 0, 0.5);
             z-index: 45;
+            backdrop-filter: blur(2px);
         }
 
-        /* LOADING SKELETON */
+        /* ===================== SKELETON ===================== */
         .skeleton {
             animation: skeleton-loading 1s linear infinite alternate;
             background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 50%, #e2e8f0 100%);
             background-size: 200% 100%;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         @keyframes skeleton-loading {
@@ -297,15 +438,14 @@
             }
         }
 
-        /* FADE IN ANIMATION */
         .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(8px);
             }
 
             to {
@@ -314,10 +454,51 @@
             }
         }
 
-        /* MOBILE */
+        /* ===================== HEADER ===================== */
+        .page-header {
+            background: white;
+            padding: 14px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .page-header-dot {
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #2d6a4f, #3CB371);
+            border-radius: 50%;
+        }
+
+        .page-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* ===================== SCROLLBAR SIDEBAR ===================== */
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        /* ===================== MOBILE ===================== */
         @media (max-width: 768px) {
             .sidebar {
-                width: 280px !important;
+                width: 270px !important;
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
                 z-index: 55;
@@ -351,19 +532,6 @@
                 display: block;
             }
         }
-
-        .sidebar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: #2d6a4f;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: #1b4d3e;
-            border-radius: 4px;
-        }
     </style>
 </head>
 
@@ -371,7 +539,7 @@
 
     <!-- Hamburger Mobile -->
     <button class="hamburger" id="hamburgerBtn">
-        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
     </button>
@@ -381,33 +549,34 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
 
-        <!-- Tombol collapse -->
-        <div class="toggle-btn">
-            <button id="collapseBtn" title="Collapse sidebar">
+        <!-- SIDEBAR HEADER: Brand + Collapse -->
+        <div class="sidebar-header">
+            <div class="sidebar-brand-row">
+                <div class="brand-icon-box">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                </div>
+                <div class="brand-texts">
+                    <div class="brand-title">Cipakat Hub</div>
+                    <div class="brand-subtitle">Desa Cipakat</div>
+                </div>
+            </div>
+            <button class="collapse-btn" id="collapseBtn" title="Collapse sidebar">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
         </div>
 
-        <!-- User Info dengan FOTO PROFIL -->
-        <div class="user-section">
-            <div class="avatar">
-                @if(Auth::user()->photo)
-                    <img src="{{ Storage::url(Auth::user()->photo) }}" alt="Foto Profil">
-                @else
-                    {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
-                @endif
-            </div>
-            <div class="user-info">
-                <div class="user-name">{{ Auth::user()->name ?? 'Admin' }}</div>
-                <div class="user-email">{{ Auth::user()->email ?? 'admin@cipakat.com' }}</div>
-                <span class="user-role">{{ ucfirst(Auth::user()->role ?? 'admin') }}</span>
-            </div>
-        </div>
+        <div class="sidebar-divider"></div>
 
         <!-- Nav -->
-        <nav style="flex: 1;">
+        <nav style="flex: 1; padding-bottom: 8px;">
+
+            <div class="nav-section-label">Menu Utama</div>
+
             <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                 data-label="Dashboard">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -417,7 +586,6 @@
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <!-- Profil Saya (Semua Role) -->
             <a href="{{ route('profile.edit') }}" class="nav-item" data-label="Profil Saya">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -426,9 +594,10 @@
                 <span class="nav-label">Profil Saya</span>
             </a>
 
-            <!-- Pengumuman (Hanya untuk Admin & Petugas yang perlu manajemen) -->
             @auth
                 @if (Auth::user()->role == 'admin' || Auth::user()->role == 'petugas')
+                    <div class="nav-section-label">Manajemen</div>
+
                     <a href="{{ route('pengumuman.admin') }}" class="nav-item" data-label="Manajemen Pengumuman">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -436,11 +605,7 @@
                         </svg>
                         <span class="nav-label">Manajemen Pengumuman</span>
                     </a>
-                @endif
-            @endauth
 
-            @auth
-                @if (Auth::user()->role == 'admin' || Auth::user()->role == 'petugas')
                     <a href="{{ route('layanan.admin') }}" class="nav-item" data-label="Manajemen Surat">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -448,19 +613,7 @@
                         </svg>
                         <span class="nav-label">Manajemen Surat</span>
                     </a>
-                @else
-                    <a href="{{ route('layanan.index') }}" class="nav-item" data-label="Layanan Surat">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span class="nav-label">Layanan Surat</span>
-                    </a>
-                @endif
-            @endauth
 
-            @auth
-                @if (Auth::user()->role == 'admin' || Auth::user()->role == 'petugas')
                     <a href="{{ route('produk.admin') }}" class="nav-item" data-label="Manajemen Produk">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -468,19 +621,7 @@
                         </svg>
                         <span class="nav-label">Manajemen Produk</span>
                     </a>
-                @else
-                    <a href="{{ route('produk.index') }}" class="nav-item" data-label="Katalog Produk">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <span class="nav-label">Katalog Produk</span>
-                    </a>
-                @endif
-            @endauth
 
-            @auth
-                @if (Auth::user()->role == 'admin' || Auth::user()->role == 'petugas')
                     <a href="{{ route('booking.admin') }}" class="nav-item" data-label="Manajemen Booking">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -488,7 +629,45 @@
                         </svg>
                         <span class="nav-label">Manajemen Booking</span>
                     </a>
-                @else
+
+                    <a href="#" class="nav-item" data-label="Pengaduan Masyarakat" id="pengaduanLink">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span class="nav-label">Pengaduan Masyarakat</span>
+                    </a>
+
+                    <a href="{{ route('laporan.index') }}" class="nav-item" data-label="Laporan Layanan">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <span class="nav-label">Laporan Layanan</span>
+                    </a>
+                @endif
+            @endauth
+
+            @auth
+                @if (Auth::user()->role == 'warga')
+                    <div class="nav-section-label">Layanan</div>
+
+                    <a href="{{ route('layanan.index') }}" class="nav-item" data-label="Layanan Surat">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="nav-label">Layanan Surat</span>
+                    </a>
+
+                    <a href="{{ route('produk.index') }}" class="nav-item" data-label="Katalog Produk">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="nav-label">Katalog Produk</span>
+                    </a>
+
                     <a href="{{ route('booking.index') }}" class="nav-item" data-label="Booking Saya">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -496,30 +675,20 @@
                         </svg>
                         <span class="nav-label">Booking Saya</span>
                     </a>
-                @endif
-            @endauth
 
-            @auth
-                @if (in_array(Auth::user()->role, ['admin', 'petugas']))
-                    <a href="{{ route('keuangan.index') }}" class="nav-item" data-label="Keuangan">
+                    <a href="#" class="nav-item" data-label="Pengaduan Saya" id="pengaduanWargaLink">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <span class="nav-label">Keuangan</span>
+                        <span class="nav-label">Pengaduan Saya</span>
                     </a>
                 @endif
             @endauth
 
             @auth
                 @if (Auth::user()->role == 'admin')
-                    <a href="{{ route('laporan.index') }}" class="nav-item" data-label="Laporan">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                        <span class="nav-label">Laporan</span>
-                    </a>
+                    <div class="nav-section-label">Admin</div>
 
                     <a href="{{ route('users.index') }}" class="nav-item" data-label="Manajemen User">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -527,6 +696,14 @@
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                         <span class="nav-label">Manajemen User</span>
+                    </a>
+
+                    <a href="{{ route('analisis.warga') }}" class="nav-item" data-label="Analisis Warga">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <span class="nav-label">Analisis Warga</span>
                     </a>
 
                     <a href="{{ route('settings') }}" class="nav-item" data-label="Pengaturan">
@@ -543,7 +720,7 @@
         </nav>
 
         <!-- Logout -->
-        <div style="padding: 12px 0;">
+        <div class="logout-section">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="logout-btn" data-label="Logout">
@@ -551,32 +728,35 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
-                    <span class="logout-label">Logout</span>
+                    <span class="logout-label">Keluar</span>
                 </button>
             </form>
         </div>
     </aside>
 
-    <!-- MAIN CONTENT dengan Loading Skeleton -->
-   <main class="main-content" id="mainContent">
-    <div style="background: linear-gradient(135deg, #2d6a4f 0%, #3CB371 100%); padding: 16px 24px; border-bottom: 1px solid #1b4d3e;">
-        <h2 style="font-size: 18px; font-weight: 600; color: white;">@yield('title', 'Dashboard')</h2>
-    </div>
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
 
-    <!-- Loading Skeleton -->
-    <div id="skeletonLoader" style="padding: 24px;">
-        <div class="skeleton" style="height: 120px; margin-bottom: 20px;"></div>
-        <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
-        <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
-        <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
-        <div class="skeleton" style="height: 60px;"></div>
-    </div>
+        <!-- Header sticky -->
+        <div class="page-header">
+            <div class="page-header-dot"></div>
+            <h2>@yield('title', 'Dashboard')</h2>
+        </div>
 
-    <!-- Konten Utama (awal disembunyikan) -->
-    <div id="mainContentWrapper" style="padding: 24px; display: none;">
-        @yield('content')
-    </div>
-</main>
+        <!-- Loading Skeleton -->
+        <div id="skeletonLoader" style="padding: 24px;">
+            <div class="skeleton" style="height: 120px; margin-bottom: 20px;"></div>
+            <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
+            <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
+            <div class="skeleton" style="height: 80px; margin-bottom: 16px;"></div>
+            <div class="skeleton" style="height: 60px;"></div>
+        </div>
+
+        <!-- Konten Utama -->
+        <div id="mainContentWrapper" style="padding: 24px; display: none;">
+            @yield('content')
+        </div>
+    </main>
 
     <script>
         const sidebar = document.getElementById('sidebar');
@@ -587,13 +767,11 @@
         const skeletonLoader = document.getElementById('skeletonLoader');
         const mainContentWrapper = document.getElementById('mainContentWrapper');
 
-        // Simpan state collapse ke localStorage
         if (localStorage.getItem('sidebarCollapsed') === 'true') {
             sidebar.classList.add('collapsed');
             mainContent.classList.add('collapsed');
         }
 
-        // Collapse toggle (desktop)
         if (collapseBtn) {
             collapseBtn.onclick = function() {
                 sidebar.classList.toggle('collapsed');
@@ -602,7 +780,6 @@
             };
         }
 
-        // Mobile hamburger
         function toggleSidebar() {
             sidebar.classList.toggle('open');
             overlay.classList.toggle('show');
@@ -622,7 +799,6 @@
             };
         });
 
-        // Loading Skeleton Effect - hilangkan skeleton setelah halaman dimuat
         window.addEventListener('load', function() {
             setTimeout(function() {
                 if (skeletonLoader) {
@@ -633,6 +809,15 @@
                     mainContentWrapper.classList.add('fade-in');
                 }
             }, 500);
+        });
+
+        // Alert untuk menu yang belum dibuat (temporary)
+        const menuLinks = document.querySelectorAll('#pengaduanLink, #pengaduanWargaLink, #analisisWargaLink');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Fitur sedang dalam pengembangan!');
+            });
         });
     </script>
 
